@@ -1,0 +1,10 @@
+name: PlanetFxServerSystems
+version: 1.0.6
+author: Sebastian Mikolai
+
+main: de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.SSClient
+
+commands:
+  lobby:
+    description: Back tp Lobby
+    usage: /lobby
