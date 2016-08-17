@@ -3,6 +3,7 @@ package de.SebastianMikolai.PlanetFx.ServerSystem.SSClient;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,7 +48,18 @@ public class SSClient extends JavaPlugin {
 	}
 	
 	public void onEnable() {
-		MySQL.Connect();
+		MySQL.con = MySQL.Connect();
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MySQL.con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				MySQL.con = MySQL.Connect();
+			}
+		}, 4*60*60*20L, 4*60*60*20L);
 		MySQL.LadeTabellen();
 		tcp_master_port = MySQL.getMinecraftServer("master").getPort();
 		getCommand("lobby").setExecutor(new LobbyCommandListener());
