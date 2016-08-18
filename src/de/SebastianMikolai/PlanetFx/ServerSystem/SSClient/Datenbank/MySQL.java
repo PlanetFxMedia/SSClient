@@ -22,62 +22,70 @@ public class MySQL {
 					"?user=" + SSClient.getInstance().getConfig().getString("database.user") + "&password=" + SSClient.getInstance().getConfig().getString("database.password"));
 			return con;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	public static void Close(Connection con) {
+	public static Connection getConnection() {
 		try {
-			con.close();
-		} catch (SQLException e) {}
+			if (con == null) {
+				con = Connect();
+			}
+			if (con.isClosed()) {
+				con = Connect();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return con;
 	}
 	
 	public static void LadeTabellen() {
 		try {
-			if (con != null) {
-				Statement stmt = con.createStatement();
-				ResultSet rss = stmt.executeQuery("SHOW TABLES LIKE 'MinecraftServer'");
-				if (rss.next()) {
-					SSClient.getInstance().getLogger().info("Die Tabelle MinecraftServer wurde geladen!");
-				} else {
-					int rs = stmt.executeUpdate("CREATE TABLE MinecraftServer (id INTEGER PRIMARY KEY AUTO_INCREMENT, BungeeCordServername TEXT, Port INTEGER, Map TEXT, Modi TEXT)");
-					SSClient.getInstance().getLogger().info("Die Tabelle MinecraftServer wurde erstellt! (" + rs + ")");
-				}
-				rss = stmt.executeQuery("SHOW TABLES LIKE 'ServerStatus'");
-				if (rss.next()) {
-					SSClient.getInstance().getLogger().info("Die Tabelle ServerStatus wurde geladen!");
-				} else {
-					int rs = stmt.executeUpdate("CREATE TABLE ServerStatus (id INTEGER PRIMARY KEY AUTO_INCREMENT, BungeeCordServername TEXT, Online INTEGER, Status TEXT)");
-					SSClient.getInstance().getLogger().info("Die Tabelle ServerStatus wurde erstellt! (" + rs + ")");
-				}
+			Connection c = getConnection();
+			Statement stmt = c.createStatement();
+			ResultSet rss = stmt.executeQuery("SHOW TABLES LIKE 'MinecraftServer'");
+			if (rss.next()) {
+				SSClient.getInstance().getLogger().info("Die Tabelle MinecraftServer wurde geladen!");
 			} else {
-				System.exit(0);
+				int rs = stmt.executeUpdate("CREATE TABLE MinecraftServer (id INTEGER PRIMARY KEY AUTO_INCREMENT, BungeeCordServername TEXT, Port INTEGER, Map TEXT, Modi TEXT)");
+				SSClient.getInstance().getLogger().info("Die Tabelle MinecraftServer wurde erstellt! (" + rs + ")");
+			}
+			rss = stmt.executeQuery("SHOW TABLES LIKE 'ServerStatus'");
+			if (rss.next()) {
+				SSClient.getInstance().getLogger().info("Die Tabelle ServerStatus wurde geladen!");
+			} else {
+				int rs = stmt.executeUpdate("CREATE TABLE ServerStatus (id INTEGER PRIMARY KEY AUTO_INCREMENT, BungeeCordServername TEXT, Online INTEGER, Status TEXT)");
+				SSClient.getInstance().getLogger().info("Die Tabelle ServerStatus wurde erstellt! (" + rs + ")");
 			}
 		} catch (SQLException e) {
-			System.exit(0);
+			e.printStackTrace();
 		}
 	}
 	
 	public static void updateMinecraftServerStatus(JsonObject jsonObject) {
 		try {
-			if (con != null) {
-				Statement stmt = con.createStatement();
-				stmt.executeUpdate("UPDATE ServerStatus SET Online='" + jsonObject.get("online").getAsInt() + "', Status='" + jsonObject.get("status").getAsString() + "' WHERE BungeeCordServername='" + jsonObject.get("servername").getAsString() + "'");
-			}
-		} catch (SQLException e) {}
+			Connection c = getConnection();
+			Statement stmt = c.createStatement();
+			stmt.executeUpdate("UPDATE ServerStatus SET Online='" + jsonObject.get("online").getAsInt() + "', Status='" + jsonObject.get("status").getAsString() + "' WHERE BungeeCordServername='" + jsonObject.get("servername").getAsString() + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static MinecraftServer getMinecraftServer(String BungeeCordServername) {
 		MinecraftServer mcs = null;
 		try {
-			if (con != null) {
-				Statement stmt = con.createStatement();
-				ResultSet rss = stmt.executeQuery("SELECT * FROM MinecraftServer");
-				while (rss.next()) {
-					mcs = new MinecraftServer(rss.getString("BungeeCordServername"), rss.getInt("Port"), rss.getString("Map"), rss.getString("Modi"));
-				}
+			Connection c = getConnection();
+			Statement stmt = c.createStatement();
+			ResultSet rss = stmt.executeQuery("SELECT * FROM MinecraftServer");
+			while (rss.next()) {
+				mcs = new MinecraftServer(rss.getString("BungeeCordServername"), rss.getInt("Port"), rss.getString("Map"), rss.getString("Modi"));
 			}
-		} catch (SQLException e) {}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return mcs;
 	}
 }
