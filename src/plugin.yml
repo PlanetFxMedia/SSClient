@@ -1,5 +1,5 @@
 name: PlanetFxServerSystems
-version: 1.0.8
+version: 1.0.9
 author: Sebastian Mikolai
 
 main: de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.SSClient
