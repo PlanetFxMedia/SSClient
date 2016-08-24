@@ -18,8 +18,7 @@ public class MySQL {
 	public static Connection Connect() {
 		try {
 			Connection con = DriverManager.getConnection("jdbc:mysql://" + SSClient.getInstance().getConfig().getString("database.host") + ":" + 
-					SSClient.getInstance().getConfig().getInt("database.port") + "/" + SSClient.getInstance().getConfig().getString("database.db") + 
-					"?user=" + SSClient.getInstance().getConfig().getString("database.user") + "&password=" + SSClient.getInstance().getConfig().getString("database.password"));
+					SSClient.getInstance().getConfig().getInt("database.port") + "/" + SSClient.getInstance().getConfig().getString("database.db") + "?autoReconnect=true", SSClient.getInstance().getConfig().getString("database.user"), SSClient.getInstance().getConfig().getString("database.password"));
 			return con;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -31,8 +30,7 @@ public class MySQL {
 		try {
 			if (con == null) {
 				con = Connect();
-			}
-			if (con.isClosed()) {
+			} else if (con.isClosed()) {
 				con = Connect();
 			}
 		} catch (SQLException e) {
