@@ -150,7 +150,6 @@ public class SSClient extends JavaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Bukkit.broadcastMessage(status.name());
 		sendServerStatus(status);
 	}
 
