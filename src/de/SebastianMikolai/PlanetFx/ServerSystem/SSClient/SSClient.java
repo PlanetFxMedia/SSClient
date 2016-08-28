@@ -16,6 +16,8 @@ import com.google.gson.JsonObject;
 
 import be.isach.turfwars.TurfWars;
 import be.isach.turfwars.api.TurfWarsAPI;
+import de.SebastianMikolai.PlanetFx.IceHockey.API.HGAPI;
+import de.SebastianMikolai.PlanetFx.IceHockey.API.Utils.GameState;
 import de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.Datenbank.MySQL;
 import de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.MinecraftServer.MinecraftServerStatus;
 import de.SebastianMikolai.PlanetFx.Spleef.Spleef;
@@ -129,12 +131,26 @@ public class SSClient extends JavaPlugin {
 				} else {
 					status = MinecraftServerStatus.Offline;
 				}
+			} else if (gamename.equalsIgnoreCase("icehockey")) {
+				GameState gs = HGAPI.getGameState("IceHockey");
+				if (gs == GameState.Waiting) {
+					status = MinecraftServerStatus.Waiting;
+				} else if (gs == GameState.Running) {
+					status = MinecraftServerStatus.Running;
+				} else if (gs == GameState.Online) {
+					status = MinecraftServerStatus.Online;
+				} else if (gs == GameState.Offline) {
+					status = MinecraftServerStatus.Offline;
+				} else {
+					status = MinecraftServerStatus.Offline;
+				}
 			} else {
 				status = MinecraftServerStatus.Offline;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Bukkit.broadcastMessage(status.name());
 		sendServerStatus(status);
 	}
 
