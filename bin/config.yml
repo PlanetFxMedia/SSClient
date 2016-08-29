@@ -5,10 +5,3 @@ database:
   user: root
   password: U2ViYXN0aWFuMTIy
 game: none
-hub: mg
-items:
-  leaveItem:
-    name: '$4Zurück zur Lobby'
-    lore: '$eMit diesem Item kommst du zur Lobby.'
-    material: 'SLIME_BALL'
-    damage: 0

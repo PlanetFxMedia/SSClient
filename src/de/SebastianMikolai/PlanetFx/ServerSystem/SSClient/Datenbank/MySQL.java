@@ -6,10 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 
 import de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.SSClient;
 import de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.MinecraftServer.MinecraftServer;
+import de.SebastianMikolai.PlanetFx.ServerSystem.SSClient.MinecraftServer.MinecraftServerStatus;
 
 public class MySQL {
 	
@@ -62,11 +63,11 @@ public class MySQL {
 		}
 	}
 	
-	public static void updateMinecraftServerStatus(JsonObject jsonObject) {
+	public static void updateMinecraftServerStatus(MinecraftServerStatus status) {
 		try {
 			Connection c = getConnection();
 			Statement stmt = c.createStatement();
-			stmt.executeUpdate("UPDATE ServerStatus SET Online='" + jsonObject.get("online").getAsInt() + "', Status='" + jsonObject.get("status").getAsString() + "' WHERE BungeeCordServername='" + jsonObject.get("servername").getAsString() + "'");
+			stmt.executeUpdate("UPDATE ServerStatus SET Online='" + Bukkit.getOnlinePlayers().size() + "', Status='" + status + "' WHERE BungeeCordServername='" + Bukkit.getServerName() + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -18,7 +18,7 @@ public class EventListener implements Listener {
 		if (!p.isOp()) {
 			if (e.getMessage().contains("pl")) {
 				e.setCancelled(true);
-				p.sendMessage("Plugins (6): " + ChatColor.GREEN + "Essentials" + ChatColor.RESET + ", " + ChatColor.GREEN + "Minigames" + ChatColor.RESET + ", " + ChatColor.GREEN + "PlanetFxServerSystem" + ChatColor.RESET + ", " + ChatColor.GREEN + "PermissionsEx" + ChatColor.RESET + ", " + ChatColor.GREEN + "WorldEdit" + ChatColor.RESET + ", " + ChatColor.GREEN + "WorldGuard");
+				p.sendMessage("Plugins (6): " + ChatColor.GREEN + "AntiCheat" + ChatColor.RESET + ", " + ChatColor.GREEN + "Minigames" + ChatColor.RESET + ", " + ChatColor.GREEN + "PlanetFxServerSystem" + ChatColor.RESET + ", " + ChatColor.GREEN + "PermissionsEx" + ChatColor.RESET + ", " + ChatColor.GREEN + "WorldEdit" + ChatColor.RESET + ", " + ChatColor.GREEN + "WorldGuard");
 			} else if (e.getMessage().contains("lobby")) {
 				SSClient.sendToHub(p);
 			} else {
@@ -30,7 +30,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		SSClient.getInstance().sendServerStatus(SSClient.getInstance().status);
+		SSClient.getInstance().updateMinecraftServerStatus();
 		e.setJoinMessage(ChatColor.GREEN + "[+] " + ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " hat das Spiel betreten " + ChatColor.YELLOW + "(" + Bukkit.getOnlinePlayers().size() + "/" + (Bukkit.getMaxPlayers() - 1) + ")");
   		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
@@ -44,7 +44,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
-		SSClient.getInstance().sendServerStatus(SSClient.getInstance().status);
+		SSClient.getInstance().updateMinecraftServerStatus();
 		e.setQuitMessage(ChatColor.RED + "[-] " + ChatColor.YELLOW + p.getName() + ChatColor.RED + " hat das Spiel verlassen " + ChatColor.YELLOW + "(" + (Bukkit.getOnlinePlayers().size() - 1) + "/" + (Bukkit.getMaxPlayers() - 1) + ")");
 	}
 }
