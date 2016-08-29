@@ -27,6 +27,7 @@ public class SSClient extends JavaPlugin {
 	public static SSClient instance;
 	public String gamename;
 	public Location bedwars;
+	public MinecraftServerStatus status;
 	
 	public static SSClient getInstance() {
 		return instance;
@@ -46,6 +47,79 @@ public class SSClient extends JavaPlugin {
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new EventListener(), this);
 		updateMinecraftServerStatus();
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {
+
+			@Override
+			public void run() {
+				MinecraftServerStatus oldstatus = status;		
+				if (gamename.equalsIgnoreCase("bedwars")) {
+					Sign sign = (Sign) bedwars.getBlock().getState();
+					String l0 = ChatColor.stripColor(sign.getLine(0));
+					String l3 = ChatColor.stripColor(sign.getLine(3));
+					if (l0.equalsIgnoreCase("[Bedwars]")) {
+						if (l3.equalsIgnoreCase("Warten ...")) {
+							status = MinecraftServerStatus.Online;
+						} else if (l3.equalsIgnoreCase("Gestartet!")) {
+							if (Bukkit.getOnlinePlayers().size() > 0) {
+								status = MinecraftServerStatus.Running;
+							} else {
+								status = MinecraftServerStatus.Offline;
+							}
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} else {
+						status = MinecraftServerStatus.Offline;
+					}
+				} else if (gamename.equalsIgnoreCase("hungergames")) {
+					BukkitGamesAPI bga = BukkitGamesAPI.getApi();
+					de.ftbastler.bukkitgames.enums.GameState gs = bga.getCurrentGameState();
+					if (gs == de.ftbastler.bukkitgames.enums.GameState.PREGAME) {
+						status = MinecraftServerStatus.Online;
+					} else if (gs == de.ftbastler.bukkitgames.enums.GameState.INVINCIBILITY || gs == de.ftbastler.bukkitgames.enums.GameState.RUNNING) {
+						if (Bukkit.getOnlinePlayers().size() > 0) {
+							status = MinecraftServerStatus.Running;
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} else {
+						status = MinecraftServerStatus.Offline;
+					}
+				} else if (gamename.equalsIgnoreCase("turfwars")) {				
+					TurfWarsAPI twa = TurfWars.getAPI();
+					be.isach.turfwars.game.GameState gs = twa.getGameState();
+					if (gs == be.isach.turfwars.game.GameState.WAITING) {
+						status = MinecraftServerStatus.Online;
+					} else if (gs == be.isach.turfwars.game.GameState.IN_GAME) {
+						if (Bukkit.getOnlinePlayers().size() > 0) {
+							status = MinecraftServerStatus.Running;
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} else {
+						status = MinecraftServerStatus.Offline;
+					}
+				} else if (gamename.equalsIgnoreCase("icehockey")) {
+					GameState gs = HGAPI.getGameState("IceHockey");
+					if (gs == GameState.Online) {
+						status = MinecraftServerStatus.Online;
+					} else if (gs == GameState.Running) {
+						if (Bukkit.getOnlinePlayers().size() > 0) {
+							status = MinecraftServerStatus.Running;
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} else if (gs == GameState.Offline) {
+						status = MinecraftServerStatus.Offline;
+					} else {
+						status = MinecraftServerStatus.Offline;
+					}
+				}
+				if (oldstatus != status) {
+					updateMinecraftServerStatus();
+				}
+			}
+		}, 20L, 20L);
 	}
 	
 	public void onDisable() {
