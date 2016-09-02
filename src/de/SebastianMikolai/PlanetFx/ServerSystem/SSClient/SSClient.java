@@ -28,6 +28,7 @@ public class SSClient extends JavaPlugin {
 	public String gamename;
 	public Location bedwars;
 	public MinecraftServerStatus status;
+	public int online;
 	
 	public static SSClient getInstance() {
 		return instance;
@@ -51,6 +52,7 @@ public class SSClient extends JavaPlugin {
 
 			@Override
 			public void run() {
+				int oldonline = online;
 				MinecraftServerStatus oldstatus = status;		
 				if (gamename.equalsIgnoreCase("bedwars")) {
 					Sign sign = (Sign) bedwars.getBlock().getState();
@@ -115,7 +117,10 @@ public class SSClient extends JavaPlugin {
 						status = MinecraftServerStatus.Offline;
 					}
 				}
+				online = Bukkit.getOnlinePlayers().size();
 				if (oldstatus != status) {
+					updateMinecraftServerStatus();
+				} else if (oldonline != online) {
 					updateMinecraftServerStatus();
 				}
 			}
@@ -129,6 +134,7 @@ public class SSClient extends JavaPlugin {
 	}
 	
 	public void updateMinecraftServerStatus() {
+		online = Bukkit.getOnlinePlayers().size();
 		if (gamename.equalsIgnoreCase("bedwars")) {
 			Sign sign = (Sign) bedwars.getBlock().getState();
 			String l0 = ChatColor.stripColor(sign.getLine(0));
