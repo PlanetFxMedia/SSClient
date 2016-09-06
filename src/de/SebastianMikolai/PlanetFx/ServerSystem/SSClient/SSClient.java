@@ -55,13 +55,35 @@ public class SSClient extends JavaPlugin {
 				int oldonline = online;
 				MinecraftServerStatus oldstatus = status;		
 				if (gamename.equalsIgnoreCase("bedwars")) {
-					Sign sign = (Sign) bedwars.getBlock().getState();
-					String l0 = ChatColor.stripColor(sign.getLine(0));
-					String l3 = ChatColor.stripColor(sign.getLine(3));
-					if (l0.equalsIgnoreCase("[Bedwars]")) {
-						if (l3.equalsIgnoreCase("Warten ...")) {
+					try {
+						Sign sign = (Sign) bedwars.getBlock().getState();
+						String l0 = ChatColor.stripColor(sign.getLine(0));
+						String l3 = ChatColor.stripColor(sign.getLine(3));
+						if (l0.equalsIgnoreCase("[Bedwars]")) {
+							if (l3.equalsIgnoreCase("Warten ...")) {
+								status = MinecraftServerStatus.Online;
+							} else if (l3.equalsIgnoreCase("Gestartet!")) {
+								if (Bukkit.getOnlinePlayers().size() > 0) {
+									status = MinecraftServerStatus.Running;
+								} else {
+									status = MinecraftServerStatus.Offline;
+								}
+							} else {
+								status = MinecraftServerStatus.Offline;
+							}
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} catch (Exception e) {
+						status = MinecraftServerStatus.Online;
+					}					
+				} else if (gamename.equalsIgnoreCase("hungergames")) {
+					try {
+						BukkitGamesAPI bga = BukkitGamesAPI.getApi();
+						de.ftbastler.bukkitgames.enums.GameState gs = bga.getCurrentGameState();
+						if (gs == de.ftbastler.bukkitgames.enums.GameState.PREGAME) {
 							status = MinecraftServerStatus.Online;
-						} else if (l3.equalsIgnoreCase("Gestartet!")) {
+						} else if (gs == de.ftbastler.bukkitgames.enums.GameState.INVINCIBILITY || gs == de.ftbastler.bukkitgames.enums.GameState.RUNNING) {
 							if (Bukkit.getOnlinePlayers().size() > 0) {
 								status = MinecraftServerStatus.Running;
 							} else {
@@ -70,51 +92,45 @@ public class SSClient extends JavaPlugin {
 						} else {
 							status = MinecraftServerStatus.Offline;
 						}
-					} else {
-						status = MinecraftServerStatus.Offline;
-					}
-				} else if (gamename.equalsIgnoreCase("hungergames")) {
-					BukkitGamesAPI bga = BukkitGamesAPI.getApi();
-					de.ftbastler.bukkitgames.enums.GameState gs = bga.getCurrentGameState();
-					if (gs == de.ftbastler.bukkitgames.enums.GameState.PREGAME) {
+					} catch (Exception e) {
 						status = MinecraftServerStatus.Online;
-					} else if (gs == de.ftbastler.bukkitgames.enums.GameState.INVINCIBILITY || gs == de.ftbastler.bukkitgames.enums.GameState.RUNNING) {
-						if (Bukkit.getOnlinePlayers().size() > 0) {
-							status = MinecraftServerStatus.Running;
-						} else {
-							status = MinecraftServerStatus.Offline;
-						}
-					} else {
-						status = MinecraftServerStatus.Offline;
 					}
 				} else if (gamename.equalsIgnoreCase("turfwars")) {				
-					TurfWarsAPI twa = TurfWars.getAPI();
-					be.isach.turfwars.game.GameState gs = twa.getGameState();
-					if (gs == be.isach.turfwars.game.GameState.WAITING) {
-						status = MinecraftServerStatus.Online;
-					} else if (gs == be.isach.turfwars.game.GameState.IN_GAME) {
-						if (Bukkit.getOnlinePlayers().size() > 0) {
-							status = MinecraftServerStatus.Running;
+					try {
+						TurfWarsAPI twa = TurfWars.getAPI();
+						be.isach.turfwars.game.GameState gs = twa.getGameState();
+						if (gs == be.isach.turfwars.game.GameState.WAITING) {
+							status = MinecraftServerStatus.Online;
+						} else if (gs == be.isach.turfwars.game.GameState.IN_GAME) {
+							if (Bukkit.getOnlinePlayers().size() > 0) {
+								status = MinecraftServerStatus.Running;
+							} else {
+								status = MinecraftServerStatus.Offline;
+							}
 						} else {
 							status = MinecraftServerStatus.Offline;
 						}
-					} else {
-						status = MinecraftServerStatus.Offline;
+					} catch (Exception e) {
+						status = MinecraftServerStatus.Online;
 					}
 				} else if (gamename.equalsIgnoreCase("icehockey")) {
-					GameState gs = HGAPI.getGameState("IceHockey");
-					if (gs == GameState.Online) {
-						status = MinecraftServerStatus.Online;
-					} else if (gs == GameState.Running) {
-						if (Bukkit.getOnlinePlayers().size() > 0) {
-							status = MinecraftServerStatus.Running;
+					try {
+						GameState gs = HGAPI.getGameState("IceHockey");
+						if (gs == GameState.Online) {
+							status = MinecraftServerStatus.Online;
+						} else if (gs == GameState.Running) {
+							if (Bukkit.getOnlinePlayers().size() > 0) {
+								status = MinecraftServerStatus.Running;
+							} else {
+								status = MinecraftServerStatus.Offline;
+							}
+						} else if (gs == GameState.Offline) {
+							status = MinecraftServerStatus.Offline;
 						} else {
 							status = MinecraftServerStatus.Offline;
 						}
-					} else if (gs == GameState.Offline) {
-						status = MinecraftServerStatus.Offline;
-					} else {
-						status = MinecraftServerStatus.Offline;
+					} catch (Exception e) {
+						status = MinecraftServerStatus.Online;
 					}
 				}
 				online = Bukkit.getOnlinePlayers().size();
@@ -136,13 +152,35 @@ public class SSClient extends JavaPlugin {
 	public void updateMinecraftServerStatus() {
 		online = Bukkit.getOnlinePlayers().size();
 		if (gamename.equalsIgnoreCase("bedwars")) {
-			Sign sign = (Sign) bedwars.getBlock().getState();
-			String l0 = ChatColor.stripColor(sign.getLine(0));
-			String l3 = ChatColor.stripColor(sign.getLine(3));
-			if (l0.equalsIgnoreCase("[Bedwars]")) {
-				if (l3.equalsIgnoreCase("Warten ...")) {
+			try {
+				Sign sign = (Sign) bedwars.getBlock().getState();
+				String l0 = ChatColor.stripColor(sign.getLine(0));
+				String l3 = ChatColor.stripColor(sign.getLine(3));
+				if (l0.equalsIgnoreCase("[Bedwars]")) {
+					if (l3.equalsIgnoreCase("Warten ...")) {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
+					} else if (l3.equalsIgnoreCase("Gestartet!")) {
+						if (Bukkit.getOnlinePlayers().size() > 0) {
+							MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
+						} else {
+							MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+						}
+					} else {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+					}
+				} else {
+					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+				}
+			} catch (Exception e) {
+				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
+			}
+		} else if (gamename.equalsIgnoreCase("hungergames")) {
+			try {
+				BukkitGamesAPI bga = BukkitGamesAPI.getApi();
+				de.ftbastler.bukkitgames.enums.GameState gs = bga.getCurrentGameState();
+				if (gs == de.ftbastler.bukkitgames.enums.GameState.PREGAME) {
 					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
-				} else if (l3.equalsIgnoreCase("Gestartet!")) {
+				} else if (gs == de.ftbastler.bukkitgames.enums.GameState.INVINCIBILITY || gs == de.ftbastler.bukkitgames.enums.GameState.RUNNING) {
 					if (Bukkit.getOnlinePlayers().size() > 0) {
 						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
 					} else {
@@ -151,51 +189,45 @@ public class SSClient extends JavaPlugin {
 				} else {
 					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 				}
-			} else {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
-			}
-		} else if (gamename.equalsIgnoreCase("hungergames")) {
-			BukkitGamesAPI bga = BukkitGamesAPI.getApi();
-			de.ftbastler.bukkitgames.enums.GameState gs = bga.getCurrentGameState();
-			if (gs == de.ftbastler.bukkitgames.enums.GameState.PREGAME) {
+			} catch (Exception e) {
 				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
-			} else if (gs == de.ftbastler.bukkitgames.enums.GameState.INVINCIBILITY || gs == de.ftbastler.bukkitgames.enums.GameState.RUNNING) {
-				if (Bukkit.getOnlinePlayers().size() > 0) {
-					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
-				} else {
-					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
-				}
-			} else {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 			}
 		} else if (gamename.equalsIgnoreCase("turfwars")) {				
-			TurfWarsAPI twa = TurfWars.getAPI();
-			be.isach.turfwars.game.GameState gs = twa.getGameState();
-			if (gs == be.isach.turfwars.game.GameState.WAITING) {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
-			} else if (gs == be.isach.turfwars.game.GameState.IN_GAME) {
-				if (Bukkit.getOnlinePlayers().size() > 0) {
-					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
+			try {
+				TurfWarsAPI twa = TurfWars.getAPI();
+				be.isach.turfwars.game.GameState gs = twa.getGameState();
+				if (gs == be.isach.turfwars.game.GameState.WAITING) {
+					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
+				} else if (gs == be.isach.turfwars.game.GameState.IN_GAME) {
+					if (Bukkit.getOnlinePlayers().size() > 0) {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
+					} else {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+					}
 				} else {
 					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 				}
-			} else {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+			} catch (Exception e) {
+				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
 			}
 		} else if (gamename.equalsIgnoreCase("icehockey")) {
-			GameState gs = HGAPI.getGameState("IceHockey");
-			if (gs == GameState.Online) {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
-			} else if (gs == GameState.Running) {
-				if (Bukkit.getOnlinePlayers().size() > 0) {
-					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
+			try {
+				GameState gs = HGAPI.getGameState("IceHockey");
+				if (gs == GameState.Online) {
+					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
+				} else if (gs == GameState.Running) {
+					if (Bukkit.getOnlinePlayers().size() > 0) {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
+					} else {
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+					}
+				} else if (gs == GameState.Offline) {
+					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 				} else {
 					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 				}
-			} else if (gs == GameState.Offline) {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
-			} else {
-				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
+			} catch (Exception e) {
+				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
 			}
 		} else {
 			MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
