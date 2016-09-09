@@ -39,6 +39,15 @@ public class EventListener implements Listener {
 		p.setTotalExperience(0);
 		p.updateInventory();
 		p.getWorld().setTime(6000);
+		if (SSClient.getInstance().gamename.equalsIgnoreCase("tntrun")) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(SSClient.getInstance(), new Runnable() {
+				
+				@Override
+				public void run() {
+					p.performCommand("tntrun join Arena");
+				}
+			}, 10L);
+		}
 	}
 	
 	@EventHandler

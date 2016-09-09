@@ -40,6 +40,8 @@ public class SSClient extends JavaPlugin {
 		gamename = getConfig().getString("game");
 		if (gamename.equalsIgnoreCase("bedwars")) {
 			bedwars = new Location(Bukkit.getWorld(getConfig().getString("signs.bedwars.world")), getConfig().getInt("signs.bedwars.x"), getConfig().getInt("signs.bedwars.y"), getConfig().getInt("signs.bedwars.z"));
+		} else if (gamename.equalsIgnoreCase("tntrun")) {
+			bedwars = new Location(Bukkit.getWorld(getConfig().getString("signs.tntrun.world")), getConfig().getInt("signs.tntrun.x"), getConfig().getInt("signs.tntrun.y"), getConfig().getInt("signs.tntrun.z"));
 		}
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		MySQL.LadeTabellen();
@@ -132,6 +134,29 @@ public class SSClient extends JavaPlugin {
 					} catch (Exception e) {
 						status = MinecraftServerStatus.Online;
 					}
+				} else if (gamename.equalsIgnoreCase("tntrun")) {
+					try {
+						Sign sign = (Sign) bedwars.getBlock().getState();
+						String l0 = ChatColor.stripColor(sign.getLine(0));
+						String l3 = ChatColor.stripColor(sign.getLine(3));
+						if (l0.equalsIgnoreCase("TNTRun")) {
+							if (l3.equalsIgnoreCase("Waiting")) {
+								status = MinecraftServerStatus.Online;
+							} else if (l3.equalsIgnoreCase("Starting")) {
+								status = MinecraftServerStatus.Online;
+							} else if (l3.equalsIgnoreCase("IN-GAME")) {
+								status = MinecraftServerStatus.Running;
+							} else if (l3.equalsIgnoreCase("Ending")) {
+								status = MinecraftServerStatus.Offline;
+							} else {
+								status = MinecraftServerStatus.Offline;
+							}
+						} else {
+							status = MinecraftServerStatus.Offline;
+						}
+					} catch (Exception e) {
+						status = MinecraftServerStatus.Online;
+					}					
 				}
 				online = Bukkit.getOnlinePlayers().size();
 				if (oldstatus != status) {
@@ -228,6 +253,29 @@ public class SSClient extends JavaPlugin {
 				}
 			} catch (Exception e) {
 				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
+			}
+		} else if (gamename.equalsIgnoreCase("tntrun")) {
+			try {
+				Sign sign = (Sign) bedwars.getBlock().getState();
+				String l0 = ChatColor.stripColor(sign.getLine(0));
+				String l3 = ChatColor.stripColor(sign.getLine(3));
+				if (l0.equalsIgnoreCase("TNTRun")) {
+					if (l3.equalsIgnoreCase("Waiting")) {
+						status = MinecraftServerStatus.Online;
+					} else if (l3.equalsIgnoreCase("Starting")) {
+						status = MinecraftServerStatus.Online;
+					} else if (l3.equalsIgnoreCase("IN-GAME")) {
+						status = MinecraftServerStatus.Running;
+					} else if (l3.equalsIgnoreCase("Ending")) {
+						status = MinecraftServerStatus.Offline;
+					} else {
+						status = MinecraftServerStatus.Offline;
+					}
+				} else {
+					status = MinecraftServerStatus.Offline;
+				}
+			} catch (Exception e) {
+				status = MinecraftServerStatus.Online;
 			}
 		} else {
 			MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
