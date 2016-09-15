@@ -157,7 +157,6 @@ public class SSClient extends JavaPlugin {
 					} catch (Exception e) {
 						status = MinecraftServerStatus.Online; 
 					}
-					Bukkit.getLogger().info(status.name());
 				}
 				online = Bukkit.getOnlinePlayers().size();
 				if (oldstatus != status) {
