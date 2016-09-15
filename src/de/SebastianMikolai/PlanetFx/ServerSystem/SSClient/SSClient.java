@@ -261,21 +261,21 @@ public class SSClient extends JavaPlugin {
 				String l3 = ChatColor.stripColor(sign.getLine(3));
 				if (l0.equalsIgnoreCase("TNTRun")) {
 					if (l3.equalsIgnoreCase("Waiting")) {
-						status = MinecraftServerStatus.Online;
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
 					} else if (l3.equalsIgnoreCase("Starting")) {
-						status = MinecraftServerStatus.Online;
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
 					} else if (l3.equalsIgnoreCase("IN-GAME")) {
-						status = MinecraftServerStatus.Running;
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Running);
 					} else if (l3.equalsIgnoreCase("Ending")) {
-						status = MinecraftServerStatus.Offline;
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 					} else {
-						status = MinecraftServerStatus.Offline;
+						MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 					}
 				} else {
-					status = MinecraftServerStatus.Offline;
+					MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
 				}
 			} catch (Exception e) {
-				status = MinecraftServerStatus.Online;
+				MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Online);
 			}
 		} else {
 			MySQL.updateMinecraftServerStatus(MinecraftServerStatus.Offline);
