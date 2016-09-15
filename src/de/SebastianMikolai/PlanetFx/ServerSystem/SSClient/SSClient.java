@@ -155,7 +155,7 @@ public class SSClient extends JavaPlugin {
 							status = MinecraftServerStatus.Offline;
 						}
 					} catch (Exception e) {
-						status = MinecraftServerStatus.Online;
+						status = MinecraftServerStatus.Online; 
 					}
 					Bukkit.getLogger().info(status.name());
 				}
